@@ -1,7 +1,7 @@
 # Airosu-Unity3D-AWS (In progress)
 
 ## To Do:
-- Create death animation and gray screen when the player dies;
+- Create death animation and gray screen shader when the player dies;
 - Add Photon PUN2 to project, to be able to play with friends;
 - Create matchmaking system, learn and use AWS ECS to do this step;
 - Add entrance and victory animations, plus UI for match status;
