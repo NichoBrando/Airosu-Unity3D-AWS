@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class Player : MonoBehaviour
 {
@@ -19,26 +21,71 @@ public class Player : MonoBehaviour
     private float forwardMovement;
     private float rotationMovement;
 
-    [SerializeField]
     private float shootCooldown = 0f;
+
+    [SerializeField]
+    private Image shootTimerImage;
     private int id = 4;
 
+    private float life = 4f;
+
+    [SerializeField]
+    private Image lifeBarImage;
+
+    private bool isDead = false;
+
+    private bool isInvincible;
+
+    private void UpdateShootCD()
+    {
+        if (shootCooldown != 0 && !isDead) {
+            shootCooldown -= Time.deltaTime;
+            if (shootCooldown < 0) shootCooldown = 0;
+            shootTimerImage.fillAmount = 1 - shootCooldown / 1.5f;
+        }
+        else if(isDead) {
+            shootTimerImage.fillAmount = 0;
+        }
+    }
+
+    private void UpdateLife()
+    {
+            if (!isDead && life < 4) {
+                life += 1 * Time.deltaTime / 10;
+            }
+            lifeBarImage.fillAmount = life / 4;
+            if (life > 4) life = 4f;
+    }
 
     void Update()
     {
         rotationMovement = Input.GetAxisRaw("Horizontal");
         forwardMovement = Input.GetAxisRaw("Vertical");
-        if (Input.GetKeyDown(KeyCode.P) && shootCooldown == 0) {
+        if (Input.GetKeyDown(KeyCode.P) && shootCooldown == 0 && !isDead) {
             ShootMissile();
         }
-        if (shootCooldown != 0) {
-            shootCooldown -= Time.deltaTime;
-            if (shootCooldown < 0) shootCooldown = 0;
+        UpdateLife();
+        UpdateShootCD();
+    }
+
+    void ReceiveDamage()
+    {
+        if (isInvincible) return;
+        life -= 1;
+        if (life <= 0)
+        {
+            isDead = true;
+            StartCoroutine(ResurrectPlayer());
         }
     }
 
     void FixedUpdate()
     {
+        if (isDead) {
+            body.velocity = Vector3.zero;
+            return;
+        }
+
         Vector3 updatedAngles = new Vector3(
             transform.eulerAngles.x, 
             transform.eulerAngles.y, 
@@ -62,6 +109,21 @@ public class Player : MonoBehaviour
         rocketConfigs.SetTransform(cannonTransform.position, tankTransform.eulerAngles);
         rocketConfigs.SetOwner(id);
         rocketConfigs.SetMovementForward(transform.forward);
-        shootCooldown = 4f;
+        shootCooldown = 1.5f;
+        ReceiveDamage();
+    }
+
+    private IEnumerator ResurrectPlayer()
+    {
+        // TODO ADD GREY CAMERA
+        yield return new WaitForSeconds(3f);
+
+        // TODO add halo on Tank to show invincibility
+        isDead = false;
+        isInvincible = true;
+        shootCooldown = 1.5f;
+        life = 4f;
+        yield return new WaitForSeconds(1.5f);
+        isInvincible = false;
     }
 }
