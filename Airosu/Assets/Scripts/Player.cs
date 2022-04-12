@@ -36,6 +36,14 @@ public class Player : MonoBehaviour
 
     private bool isInvincible;
 
+    private PostProcess shaderController;
+
+    private void Awake()
+    {
+        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+        shaderController = camera.gameObject.GetComponent<PostProcess>();
+    }
+
     private void UpdateShootCD()
     {
         if (shootCooldown != 0 && !isDead) {
@@ -115,7 +123,7 @@ public class Player : MonoBehaviour
 
     private IEnumerator ResurrectPlayer()
     {
-        // TODO ADD GREY CAMERA
+        shaderController.grayScale = 1f;
         yield return new WaitForSeconds(3f);
 
         // TODO add halo on Tank to show invincibility
@@ -123,6 +131,8 @@ public class Player : MonoBehaviour
         isInvincible = true;
         shootCooldown = 1.5f;
         life = 4f;
+        shaderController.grayScale = 0;
+        
         yield return new WaitForSeconds(1.5f);
         isInvincible = false;
     }
