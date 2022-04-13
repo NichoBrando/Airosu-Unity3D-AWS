@@ -123,16 +123,14 @@ public class Player : MonoBehaviour
 
     private IEnumerator ResurrectPlayer()
     {
-        shaderController.grayScale = 1f;
+        StartCoroutine(shaderController.SetGrayscale(1f, 0.5f));
         yield return new WaitForSeconds(3f);
-
+        StartCoroutine(shaderController.SetGrayscale(0f, 0.5f));
         // TODO add halo on Tank to show invincibility
         isDead = false;
         isInvincible = true;
         shootCooldown = 1.5f;
         life = 4f;
-        shaderController.grayScale = 0;
-        
         yield return new WaitForSeconds(1.5f);
         isInvincible = false;
     }

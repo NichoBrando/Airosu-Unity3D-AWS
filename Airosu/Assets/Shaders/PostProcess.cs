@@ -13,8 +13,6 @@ public class PostProcess : MonoBehaviour
     [Range(0, 1)]
     private float shaderIntensity;
 
-    public float grayScale = 0;
-
     void Awake()
     {
         _material = new Material(shader);
@@ -22,11 +20,26 @@ public class PostProcess : MonoBehaviour
     
     void FixedUpdate()
     {
-        _material.SetFloat("_GrayScale", grayScale);
+        _material.SetFloat("_GrayscaleAmount", shaderIntensity);
     }
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         Graphics.Blit(src, dest, _material);
+    }
+
+    public IEnumerator SetGrayscale(float newValue, float duration)
+    {
+        float time = 0;
+        bool isReducing = newValue < shaderIntensity;
+        while (duration > time)
+        {
+            float durationFrame = Time.deltaTime;
+            float ratio = time / duration;
+            shaderIntensity = isReducing ? 1 - ratio : ratio;
+            time += durationFrame;
+            yield return null;
+        }
+        shaderIntensity = newValue;
     }
 }

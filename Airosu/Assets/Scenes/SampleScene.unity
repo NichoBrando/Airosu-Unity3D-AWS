@@ -619,6 +619,7 @@ GameObject:
   - component: {fileID: 1022022862}
   - component: {fileID: 1022022864}
   - component: {fileID: 1022022863}
+  - component: {fileID: 1022022865}
   m_Layer: 5
   m_Name: Life Bar
   m_TagString: Untagged
@@ -685,6 +686,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1022022861}
   m_CullTransparentMesh: 1
+--- !u!114 &1022022865
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1022022861}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ab07b8ca14339346b3002fbaa93f474, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  shader: {fileID: 4800000, guid: 09bf2be2fea721544b9c7d67b74a369d, type: 3}
+  shaderIntensity: 0
 --- !u!1 &1034560248
 GameObject:
   m_ObjectHideFlags: 0
@@ -760,6 +775,25 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034560248}
   m_CullTransparentMesh: 1
+--- !u!1 &1112780506 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6264688704507614333, guid: a2e32aff1f1b6484bba235a9c2aede4b, type: 3}
+  m_PrefabInstance: {fileID: 1443276932}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1112780510
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1112780506}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 8193280226957326976, guid: a2e32aff1f1b6484bba235a9c2aede4b, type: 3}
 --- !u!1001 &1175275655
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3031,7 +3065,7 @@ GameObject:
   - component: {fileID: 1742099643}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3114,6 +3148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: 09bf2be2fea721544b9c7d67b74a369d, type: 3}
+  shaderIntensity: 0
 --- !u!1 &1752479966 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 65702495048144492, guid: a2e32aff1f1b6484bba235a9c2aede4b, type: 3}
