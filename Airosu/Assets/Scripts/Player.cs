@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.AI;
+using Mirror;
 
-public class Player : MonoBehaviour
+public class Player : NetworkBehaviour
 {
     [SerializeField]
     private Rigidbody body;
@@ -17,19 +16,14 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private GameObject rocketPrefab;
-
-    private float forwardMovement;
-    private float rotationMovement;
-
     private float shootCooldown = 0f;
 
-    [SerializeField]
     private Image shootTimerImage;
     private int id = 4;
 
+    [SyncVar]
     private float life = 4f;
 
-    [SerializeField]
     private Image lifeBarImage;
 
     private bool isDead = false;
@@ -38,76 +32,67 @@ public class Player : MonoBehaviour
 
     private PostProcess shaderController;
 
-    private void Awake()
+    public int ID {
+        get => id;
+    }
+
+    public override void OnStartLocalPlayer()
     {
-        GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
-        shaderController = camera.gameObject.GetComponent<PostProcess>();
+        if (isLocalPlayer) {
+            GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
+            shaderController = camera.gameObject.GetComponent<PostProcess>();
+            GameObject shootTimerObject = GameObject.FindGameObjectWithTag("ShootTimer");
+            shootTimerImage = shootTimerObject.GetComponent<Image>();
+            GameObject lifeBarObject = GameObject.FindGameObjectWithTag("LifeBar");
+            lifeBarImage = lifeBarObject.GetComponent<Image>();
+        }
     }
 
     private void UpdateShootCD()
     {
-        if (shootCooldown != 0 && !isDead) {
-            shootCooldown -= Time.deltaTime;
-            if (shootCooldown < 0) shootCooldown = 0;
-            shootTimerImage.fillAmount = 1 - shootCooldown / 1.5f;
-        }
-        else if(isDead) {
-            shootTimerImage.fillAmount = 0;
+        if (isServer) {
+            if (shootCooldown != 0 && !isDead) {
+                shootCooldown -= Time.deltaTime;
+                if (shootCooldown < 0) shootCooldown = 0;
+                shootTimerImage.fillAmount = 1 - shootCooldown / 1.5f;
+            }
+            else if(isDead) {
+                shootTimerImage.fillAmount = 0;
+            }
         }
     }
 
     private void UpdateLife()
     {
-            if (!isDead && life < 4) {
-                life += 1 * Time.deltaTime / 10;
-            }
-            lifeBarImage.fillAmount = life / 4;
-            if (life > 4) life = 4f;
+        if (!isDead && life < 4) {
+            life += 1 * Time.deltaTime / 10;
+        }
+        if (life > 4) life = 4f;
+        lifeBarImage.fillAmount = life / 4;
     }
 
     void Update()
     {
-        rotationMovement = Input.GetAxisRaw("Horizontal");
-        forwardMovement = Input.GetAxisRaw("Vertical");
-        if (Input.GetKeyDown(KeyCode.P) && shootCooldown == 0 && !isDead) {
-            ShootMissile();
-        }
-        UpdateLife();
-        UpdateShootCD();
-    }
-
-    void ReceiveDamage()
-    {
-        if (isInvincible) return;
-        life -= 1;
-        if (life <= 0)
-        {
-            isDead = true;
-            StartCoroutine(ResurrectPlayer());
+        if (isLocalPlayer) {
+            if (Input.GetKeyDown(KeyCode.P) && shootCooldown == 0 && !isDead) {
+                ShootMissile();
+            }
+            UpdateLife();
+            UpdateShootCD();
         }
     }
 
-    void FixedUpdate()
+    public void ReceiveDamage()
     {
-        if (isDead) {
-            body.velocity = Vector3.zero;
-            return;
+        if (isServer) {
+            if (isInvincible) return;
+            life -= 1;
+            if (life <= 0)
+            {
+                isDead = true;
+                StartCoroutine(ResurrectPlayer());
+            }
         }
-
-        Vector3 updatedAngles = new Vector3(
-            transform.eulerAngles.x, 
-            transform.eulerAngles.y, 
-            transform.eulerAngles.z
-        );
-
-        updatedAngles.y += rotationMovement * 60 * Time.deltaTime;
-
-        transform.eulerAngles = updatedAngles;
-
-        Vector3 movement = transform.forward * forwardMovement * 2;
-        movement.y -= 9.81f * Time.deltaTime;
-
-        body.velocity = movement;
     }
 
     private void ShootMissile()
@@ -118,20 +103,25 @@ public class Player : MonoBehaviour
         rocketConfigs.SetOwner(id);
         rocketConfigs.SetMovementForward(transform.forward);
         shootCooldown = 1.5f;
-        ReceiveDamage();
     }
 
     private IEnumerator ResurrectPlayer()
     {
-        StartCoroutine(shaderController.SetGrayscale(1f, 0.5f));
+        if (isLocalPlayer) {
+            StartCoroutine(shaderController.SetGrayscale(1f, 0.5f));
+        }
         yield return new WaitForSeconds(3f);
-        StartCoroutine(shaderController.SetGrayscale(0f, 0.5f));
+        if (isLocalPlayer) {
+            StartCoroutine(shaderController.SetGrayscale(0f, 0.5f));
+        }
         // TODO add halo on Tank to show invincibility
-        isDead = false;
-        isInvincible = true;
-        shootCooldown = 1.5f;
-        life = 4f;
-        yield return new WaitForSeconds(1.5f);
-        isInvincible = false;
+        if (isServer) {
+            isDead = false;
+            isInvincible = true;
+            shootCooldown = 1.5f;
+            life = 4f;
+            yield return new WaitForSeconds(1.5f);
+            isInvincible = false;
+        }
     }
 }

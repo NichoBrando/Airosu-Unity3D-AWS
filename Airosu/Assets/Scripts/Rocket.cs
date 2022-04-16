@@ -32,9 +32,14 @@ public class Rocket : MonoBehaviour
         transform.eulerAngles = newOrientation;
     }
 
-    // -8.775, -22 3.537
     private void OnTriggerEnter (Collider obj)
     {
+        if (obj.gameObject.tag == "Player") {
+            Player affectedPlayer = obj.gameObject.GetComponent<Player>();
+            if (affectedPlayer != null && affectedPlayer.ID != ownerId) {
+                affectedPlayer.ReceiveDamage();
+            }
+        }
         Destroy(gameObject);
     }
 
