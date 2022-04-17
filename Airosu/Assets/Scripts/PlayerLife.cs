@@ -27,7 +27,7 @@ public class PlayerLife : NetworkBehaviour
             life += 1 * Time.fixedDeltaTime / 10;
         }
         if (life > 4) life = 4f;
-        lifeBarImage.fillAmount = life / 4;
+        if (isLocalPlayer) lifeBarImage.fillAmount = life / 4;
     }
 
     private void FixedUpdate()
