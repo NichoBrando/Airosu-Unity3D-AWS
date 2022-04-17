@@ -1,6 +1,4 @@
 using Mirror;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -13,6 +11,9 @@ public class PlayerMovement : NetworkBehaviour
 
     [SyncVar]
     private float rotationMovement;
+
+    [SerializeField]
+    private PlayerCondition playerCondition;
 
     [Command]
     private void CmdChangeTransformProps(float _forwardMovement, float _rotationMovement) 
@@ -33,19 +34,24 @@ public class PlayerMovement : NetworkBehaviour
 
     private void FixedUpdate()
     {
-        if (!isServer) return;   
+        if (playerCondition.isDead) {
+            if (!isServer) return;
+            forwardMovement = 0;
+            rotationMovement = 0;
+        }
+
         Vector3 updatedAngles = new Vector3(
             transform.eulerAngles.x, 
             transform.eulerAngles.y, 
             transform.eulerAngles.z
         );
 
-        updatedAngles.y += rotationMovement * 60 * Time.deltaTime;
+        updatedAngles.y += rotationMovement * 60 * Time.fixedDeltaTime;
 
         transform.eulerAngles = updatedAngles;
 
         Vector3 newVelocity = transform.forward * forwardMovement * 2;
-        newVelocity.y -= 9.81f * Time.deltaTime;
+        newVelocity.y -= 9.81f * Time.fixedDeltaTime;
                 
         body.velocity = newVelocity;
     }

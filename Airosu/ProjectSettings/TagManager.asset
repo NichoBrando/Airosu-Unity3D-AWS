@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LifeBar
   - ShootTimer
+  - Utils
   layers:
   - Default
   - TransparentFX
