@@ -50,11 +50,11 @@ public class PlayerCoroutines : NetworkBehaviour
             StartCoroutine(shaderController.SetGrayscale(1f, 0.5f));
         }
         yield return new WaitForSeconds(3f);
+        teamIdentifier.material = defaultIdentifier;
+        playerHalo.SetActive(true);
         if (isLocalPlayer) {
             StartCoroutine(shaderController.SetGrayscale(0f, 0.5f));
         }
-        teamIdentifier.material = defaultIdentifier;
-        playerHalo.SetActive(true);
         if (isServer) {
             playerCondition.isDead = false;
             playerCondition.isInvincible = true;

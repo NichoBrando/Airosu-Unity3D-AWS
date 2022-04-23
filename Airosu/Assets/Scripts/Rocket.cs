@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Rocket : MonoBehaviour
@@ -12,6 +11,8 @@ public class Rocket : MonoBehaviour
     private Vector3 forwardPosition;
 
     private Vector3 eulerAngles;
+
+    public Player playerOwner;
 
     private void Awake()
     {
@@ -43,8 +44,9 @@ public class Rocket : MonoBehaviour
         if (ownerId == 0) return;
         if (obj.gameObject.tag == "Player") {
             Player affectedPlayer = obj.gameObject.GetComponent<Player>();
-            if (affectedPlayer != null && affectedPlayer.ID != ownerId) {
-                obj.gameObject.GetComponent<PlayerLife>().ReceiveDamage();
+            if (affectedPlayer != null && affectedPlayer != playerOwner) {
+                bool diedAfterHit = obj.gameObject.GetComponent<PlayerLife>().ReceiveDamage();
+                if (diedAfterHit) playerOwner.Score();
             }
             else {
                 return;

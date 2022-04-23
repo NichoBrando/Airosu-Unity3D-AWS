@@ -41,6 +41,7 @@ public class PlayerShoot : NetworkBehaviour
         rocketConfigs.SetOwner(playerManager.ID);
         rocketConfigs.SetTransform(cannonTransform.position, tankTransform.eulerAngles);
         rocketConfigs.SetMovementForward(transform.forward);
+        rocketConfigs.playerOwner = playerManager;
         AddShootCooldown();
     }
 

@@ -35,17 +35,19 @@ public class PlayerLife : NetworkBehaviour
         UpdateLife();
     }
 
-    public void ReceiveDamage()
+    public bool ReceiveDamage()
     {
         if (isServer) {
-            if (playerCondition.isInvincible) return;
+            if (playerCondition.isInvincible) return false;
             life -= 1;
             if (life <= 0)
             {
                 playerCondition.isDead = true;
                 playerCoroutines.ShareResurrect();
+                return true;
             }
         }
+        return false;
     }
 
     public void ResetLife()
