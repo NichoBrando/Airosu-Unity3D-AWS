@@ -1,5 +1,6 @@
 using UnityEngine;
 using Mirror;
+using Singletons;
 
 public class Player : NetworkBehaviour
 {
@@ -12,8 +13,6 @@ public class Player : NetworkBehaviour
     [SyncVar]
     private int teamIndex;
 
-    private GameManager gameManager;
-
     public uint ID {
         get => networkIdentity.netId;
     }
@@ -22,26 +21,22 @@ public class Player : NetworkBehaviour
     {
         GameObject[] playerList = GameObject.FindGameObjectsWithTag("Player");
         teamIndex = playerList.Length % 2 == 0 ? 0 : 1;
-        GameObject gameManagerObject = GameObject.FindGameObjectWithTag("GameController");
-        Debug.Log(gameManagerObject);
-        if (gameManagerObject != null) {
-            gameManager = gameManagerObject.GetComponent<GameManager>();
+        GameManagerSingleton.instance.playerTeamIndex = teamIndex;
+        GameObject[] spawnPositions = GameObject.FindGameObjectsWithTag("SpawnPoint");
+        if (spawnPositions[teamIndex] != null) {
+            transform.position = spawnPositions[teamIndex].gameObject.transform.position;
         }
     }
 
     public override void OnStartLocalPlayer()
     {
-        GameObject utils = GameObject.FindGameObjectWithTag("Utils");
-        if (utils != null) {
-            Materials MaterialsUtils = utils.GetComponent<Materials>();
-            teamIdentifier.material = MaterialsUtils.Owner;
-        }
+        teamIdentifier.material = MaterialsSingleton.instance.Owner;
     }
 
     public void Score()
     {
         if (isServer) {
-            gameManager.addPoint(teamIndex);
+            GameManagerSingleton.instance.addPoint(teamIndex);
         }
     }
 }

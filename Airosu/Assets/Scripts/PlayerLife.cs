@@ -38,7 +38,7 @@ public class PlayerLife : NetworkBehaviour
     public bool ReceiveDamage()
     {
         if (isServer) {
-            if (playerCondition.isInvincible) return false;
+            if (playerCondition.isInvincible || playerCondition.isDead) return false;
             life -= 1;
             if (life <= 0)
             {
@@ -52,6 +52,6 @@ public class PlayerLife : NetworkBehaviour
 
     public void ResetLife()
     {
-        if (isServer) life = 4f;
+        life = 4f;
     }
 }

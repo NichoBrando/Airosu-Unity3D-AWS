@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
 using UnityEngine.UI;
+using Singletons;
 
 public class PlayerShoot : NetworkBehaviour
 {
@@ -80,7 +81,12 @@ public class PlayerShoot : NetworkBehaviour
     private void Update()
     {
         if (isLocalPlayer) {
-            if (Input.GetKeyDown(KeyCode.P) && shootCooldown == 0 && !playerCondition.isDead) {
+            if (
+                Input.GetKeyDown(KeyCode.P) && 
+                shootCooldown == 0 && 
+                !playerCondition.isDead && 
+                !GameManagerSingleton.instance.IsGameFinished
+            ) {
                 CmdShootMissile();
                 if (!isServer) ShootMissile();
             }

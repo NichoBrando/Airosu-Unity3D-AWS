@@ -32,8 +32,8 @@ public class PlayerCoroutines : NetworkBehaviour
 
     public void ShareResurrect()
     {
+        StartCoroutine(ResurrectPlayer());
         RpcStartClientResurrect();
-        ResurrectPlayer();
     }
 
     public override void OnStartLocalPlayer()
@@ -41,6 +41,8 @@ public class PlayerCoroutines : NetworkBehaviour
         GameObject camera = GameObject.FindGameObjectWithTag("MainCamera");
         shaderController = camera.gameObject.GetComponent<PostProcess>();
     }
+
+
 
     private IEnumerator ResurrectPlayer()
     {
@@ -56,10 +58,10 @@ public class PlayerCoroutines : NetworkBehaviour
             StartCoroutine(shaderController.SetGrayscale(0f, 0.5f));
         }
         if (isServer) {
+            playerLife.ResetLife();
             playerCondition.isDead = false;
             playerCondition.isInvincible = true;
             playerShoot.AddShootCooldown();
-            playerLife.ResetLife();
         }
         yield return new WaitForSeconds(1.5f);
         if (isServer) {

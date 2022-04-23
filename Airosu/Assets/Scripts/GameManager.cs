@@ -1,13 +1,22 @@
 using Mirror;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameManager : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(SyncScore))]
     public SyncList<int> teamPoints = new SyncList<int>();
 
     [SerializeField]
     private UpdateScoreBoard scoreBoardHandler;
+
+    [SyncVar]
+    public bool IsGameFinished = false;
+
+    [SerializeField]
+    private GameObject winNotifier;
+    [SerializeField]
+    private Text winNotifierMessage;
+    public int playerTeamIndex;
 
     private void Awake()
     {
@@ -18,20 +27,31 @@ public class GameManager : NetworkBehaviour
     public void addPoint(int index)
     {
         teamPoints[index]++;
-        scoreBoardHandler.UpdateScoreForTeam(index, teamPoints[index]);
+        RpcSyncScore(index, teamPoints[index]);
         if (teamPoints[index] == 4) {
+            RpcWinGame(index);
             WinGame(index);
         }
     }
 
-    private void SyncScore(SyncList<int> oldValue, SyncList<int> newValue)
+    [ClientRpc]
+    private void RpcSyncScore(int index, int value)
     {
-        scoreBoardHandler.UpdateScoreForTeam(0, newValue[0]);
-        scoreBoardHandler.UpdateScoreForTeam(1, newValue[1]);
+        scoreBoardHandler.UpdateScoreForTeam(index, value);
+    }
+
+    [ClientRpc]
+    private void RpcWinGame(int teamIndex) 
+    {
+        WinGame(teamIndex);
     }
 
     private void WinGame(int teamIndex)
     {
-
+        IsGameFinished = true;
+        winNotifier.SetActive(true);
+        string result = playerTeamIndex == teamIndex ? "won" : "lost";
+        string message = $"You {result} this game!";
+        winNotifierMessage.text = message;
     }
 }
