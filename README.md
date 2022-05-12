@@ -10,3 +10,5 @@ These awesome assets were made by [dani567](https://dani567.itch.io/low-poly-tan
 - Create matchmaking system, learn and use AWS GameLift to do this step;
 - Add entrance and victory animations, plus UI for match status;
 - Create automated deploy and host the game on a react app, using AWS CDK.
+
+![Airosu-Demo](https://user-images.githubusercontent.com/62142386/167971262-a2257896-04d3-4270-a73b-a94647ea4f20.gif)
